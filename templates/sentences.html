@@ -1,0 +1,34 @@
+<table>
+    <tr>
+        <th>Speaker</th>
+        <th>Sentence</th>
+        <th>Modify</th>
+        <th>Synthesized</th>
+    </tr>
+    {% for sentence in sentences %}
+        <tr>
+            <td>{{ sentence['speaker'] }}</td>
+            <td>{{ sentence['text'] }}</td>
+            <td>
+                <select name="m{{ loop.index0 }}">
+                    {% for model in model_list %}
+                        <option value="{{ model }}"{% if model == sentence['speaker'] %} selected{% endif %}>{{ model }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                {% if 'wav' in sentence %}
+                    <audio controls>
+                        <source src="wav/{{ loop.index0 }}" type="audio/wav">
+                        Your browser does not support the audio tag.
+                    </audio>
+                {% else %}
+                    False
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+<form action="{{ url_for('modify') }}" id="modify">
+    <input type="submit" value="Modify">
+</form>

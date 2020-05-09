@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deepstory</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        let synthesized = false;
+        $(document).ready(function () {
+            $("#status").load("{{ url_for('status') }}");
+            $("#sentences").load("{{ url_for('sentences') }}");
+            $("#models").load("{{ url_for('models') }}");
+
+            $("#loadSent").submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: this.action,
+                    data: $(this).serialize(),
+                    success: function (message) {
+                        alert(message);
+                        $("#models").load("{{ url_for('models') }}");
+                        $("#sentences").load("{{ url_for('sentences') }}");
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+            $("#synth").submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: this.action,
+                    success: function (message) {
+                        alert(message);
+                        synthesized = true;
+                        $("#sentences").load("{{ url_for('sentences') }}");
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="status"></div>
+<p>Enter sentences:</p>
+<form action="{{ url_for('load_sentence') }}" id="loadSent" method="post">
+    <textarea name="text"></textarea>
+    <br/>
+    <input type="checkbox" name="isSpeaker" checked>
+    <label for="isSpeaker">Parse Speaker</label>
+    <input type="checkbox" name="isComma">
+    <label for="isComma">Separate comma</label>
+    <input type="checkbox" name="isChopped">
+    <label for="isChopped">Separate sentence</label>
+    <input type="number" name="n" value="2" min="1" max="5">
+    <label for="n">Concat n sentences</label>
+    <br/>
+    <label for="speaker">Default Speaker:</label>
+    <select name="speaker">
+        {% for model in model_list %}
+            <option value="{{ model }}">{{ model }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit">
+</form>
+{#<p>Initialize Models:</p>#}
+{#<form action="{{ url_for('init_model') }}" id="init" method="post">#}
+{#    <select name="speaker">#}
+{#        <option value="Geralt">Geralt</option>#}
+{#        <option value="Yennefer">Yennefer</option>#}
+{#        <option value="LJ">LJ</option>#}
+{#    </select>#}
+{#    <input type="submit">#}
+{#</form>#}
+<p>Models available:</p>
+<div id="models"></div>
+<p>Sentences loaded:</p>
+<div id="sentences"></div>
+<form action="{{ url_for('synthesize') }}" id="synth">
+    <input type="submit" value="Synthesize">
+</form>
+<form action="{{ url_for('combine') }}" id="combine">
+    <input type="submit" value="Create clip">
+</form>
+</body>
+</html>
