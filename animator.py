@@ -1,5 +1,5 @@
-# SIU KING WAI
-# referenced from demo.py of first order model github repo
+# SIU KING WAI SM4701 Deepstory
+# mostly referenced from demo.py of first order model github repo, optimized loading in gpu vram
 import imageio
 import yaml
 import torch
@@ -39,6 +39,8 @@ class ImageAnimator:
         self.generator.load_state_dict(checkpoint['generator'])
         self.kp_detector.load_state_dict(checkpoint['kp_detector'])
 
+        del checkpoint
+
         self.generator = DataParallelWithCallback(self.generator)
         self.kp_detector = DataParallelWithCallback(self.kp_detector)
 
@@ -53,7 +55,7 @@ class ImageAnimator:
     def animate_image(self, source_image, driving_video, relative=True, adapt_movement_scale=True):
         with torch.no_grad():
             predictions = []
-
+            # ====================================================================================
             # adapted from original to optimize memory load in gpu instead of cpu
             source_image = imageio.imread(source_image)
             # normalize color to float 0-1
@@ -69,9 +71,8 @@ class ImageAnimator:
             driving = F.interpolate(driving, scale_factor=2, mode='bilinear', align_corners=False)
             # pad the left and right side of the scaled 128x96->256x192 to fit 256x256
             driving = F.pad(input=driving, pad=(32, 32, 0, 0, 0, 0, 0, 0), mode='constant', value=0)
-
             driving = driving.permute(1, 0, 2, 3).unsqueeze(0)
-
+            # ====================================================================================
             kp_source = self.kp_detector(source)
             kp_driving_initial = self.kp_detector(driving[:, :, 0])
 

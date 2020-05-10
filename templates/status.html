@@ -1,3 +1,10 @@
-<p>Audio generate:</p>
-<p>Speech Video generate:</p>
-<p>Image Video generate:</p>
+<div class="card border-white border rounded shadow">
+    <div class="card-body">
+        <h4 class="card-title">Status:</h4>
+        <p class="card-text">GPT2: {% if gpt2 %}{{ gpt2 }}{% else %}False{% endif %}</p>
+        <p class="card-text">Synthesized: {% if synthsized %}True{% else %}False{% endif %}</p>
+        <p class="card-text">Base audio: {% if combined %}True{% else %}False{% endif %}</p>
+        <p class="card-text">Base video: {% if base %}True{% else %}False{% endif %}</p>
+        <p class="card-text">Animated video: {% if animated %}True{% else %}False{% endif %}</p>
+    </div>
+</div>

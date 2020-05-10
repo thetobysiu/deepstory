@@ -1,90 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Deepstory</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script>
-        let synthesized = false;
-        $(document).ready(function () {
-            $("#status").load("{{ url_for('status') }}");
-            $("#sentences").load("{{ url_for('sentences') }}");
-            $("#models").load("{{ url_for('models') }}");
+<html>
 
-            $("#loadSent").submit(function (e) {
-                e.preventDefault();
-                $.ajax({
-                    type: "POST",
-                    url: this.action,
-                    data: $(this).serialize(),
-                    success: function (message) {
-                        alert(message);
-                        $("#models").load("{{ url_for('models') }}");
-                        $("#sentences").load("{{ url_for('sentences') }}");
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    }
-                });
-            });
-            $("#synth").submit(function (e) {
-                e.preventDefault();
-                $.ajax({
-                    url: this.action,
-                    success: function (message) {
-                        alert(message);
-                        synthesized = true;
-                        $("#sentences").load("{{ url_for('sentences') }}");
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    }
-                });
-            });
-        });
-    </script>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Deepstory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
-<div id="status"></div>
-<p>Enter sentences:</p>
-<form action="{{ url_for('load_sentence') }}" id="loadSent" method="post">
-    <textarea name="text"></textarea>
-    <br/>
-    <input type="checkbox" name="isSpeaker" checked>
-    <label for="isSpeaker">Parse Speaker</label>
-    <input type="checkbox" name="isComma">
-    <label for="isComma">Separate comma</label>
-    <input type="checkbox" name="isChopped">
-    <label for="isChopped">Separate sentence</label>
-    <input type="number" name="n" value="2" min="1" max="5">
-    <label for="n">Concat n sentences</label>
-    <br/>
-    <label for="speaker">Default Speaker:</label>
-    <select name="speaker">
-        {% for model in model_list %}
-            <option value="{{ model }}">{{ model }}</option>
-        {% endfor %}
-    </select>
-    <input type="submit">
-</form>
-{#<p>Initialize Models:</p>#}
-{#<form action="{{ url_for('init_model') }}" id="init" method="post">#}
-{#    <select name="speaker">#}
-{#        <option value="Geralt">Geralt</option>#}
-{#        <option value="Yennefer">Yennefer</option>#}
-{#        <option value="LJ">LJ</option>#}
-{#    </select>#}
-{#    <input type="submit">#}
-{#</form>#}
-<p>Models available:</p>
-<div id="models"></div>
-<p>Sentences loaded:</p>
-<div id="sentences"></div>
-<form action="{{ url_for('synthesize') }}" id="synth">
-    <input type="submit" value="Synthesize">
-</form>
-<form action="{{ url_for('combine') }}" id="combine">
-    <input type="submit" value="Create clip">
-</form>
+<div class="container">
+    <h1 class="text-center">Deepstory</h1>
+    <div class="row">
+        <div class="col">
+            <div class="border rounded border-white shadow">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Text
+                        input</a></li>
+                    <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">GPT2</a></li>
+                    <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Animate</a></li>
+                    <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">View</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" role="tabpanel" id="tab-1">
+                        <form action="{{ url_for('load_sentence') }}" id="loadSent" method="post">
+                            <textarea class="border-light shadow-sm form-control" name="text">Geralt|I hate portals. A round of Gwent maybe?</textarea>
+                            <p>Default speaker:<select class="border-light shadow-sm custom-select" name="speaker">
+                                {% for model in model_list %}
+                                    <option value="{{ loop.index0 }}">{{ model }}</option>
+                                {% endfor %}
+                            </select></p>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   id="formCheck-1" name="isSpeaker" checked><label
+                                            class="form-check-label" for="formCheck-1">Parse Speaker</label></div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   id="formCheck-2" name="isComma"><label
+                                            class="form-check-label" for="formCheck-2">Separate comma</label></div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   id="formCheck-3" name="isChopped"><label
+                                            class="form-check-label" for="formCheck-3">Separate sentence</label></div>
+                                </div>
+                                <div class="col">
+                                    <p>Concat n sents:<input class="border-light shadow-sm form-control" type="number"
+                                                             value="2" min="1" step="1" max="5" name="n"></p>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-block d-block" type="submit">Load sentences</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="tab-2">
+                        <form action="{{ url_for('load_gpt2') }}" id="loadGPT2">
+                            <p>Model:
+                                <select class="border-light shadow-sm custom-select" name="model">
+                                    {% for gpt2_model in gpt2_list %}
+                                        <option value="{{ gpt2_model }}">{{ gpt2_model }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                            <button class="btn btn-primary btn-block" type="submit">Load model</button>
+                        </form>
+                        <form action="{{ url_for('generate') }}" id="generate" method="post">
+                            <div id="gpt2"></div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <p>Max length:<input class="border-light shadow-sm form-control" type="number"
+                                                         value="200" min="0" step="1" name="max_length"></p>
+                                </div>
+                                <div class="col">
+                                    <p>Top-p:<input class="border-light shadow-sm form-control" type="number"
+                                                    value="0.9" min="0" max="1" step="0.01" name="top_p"></p>
+                                </div>
+                                <div class="col">
+                                    <p>Top-k:<input class="border-light shadow-sm form-control" type="number" value="50"
+                                                    min="0" step="1" name="top_k"></p>
+                                </div>
+                                <div class="col">
+                                    <p>Temperature:<input class="border-light shadow-sm form-control" type="number"
+                                                          value="1" min="0" step="0.01" max="3" name="temperature"></p>
+                                </div>
+                            </div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-4"
+                                                           name="do_sample" checked><label class="form-check-label"
+                                                                                           for="formCheck-4">do_sample</label>
+                            </div>
+                            <button class="btn btn-primary btn-block" type="submit">Generate</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="tab-3">
+                        <form action="{{ url_for('animate') }}" id="animate">
+                            {% for speaker in image_dict.keys() %}
+                                <p>{{ speaker }}:
+                                    <select class="border rounded border-light shadow-sm custom-select custom-select-sm"
+                                            name="{{ speaker }}">
+                                        {% for choice_speaker, images in image_dict.items() %}
+                                            <optgroup label="{{ choice_speaker }}">
+                                                {% for image in images %}
+                                                    <option value="{{ choice_speaker }}/{{ image }}"
+                                                            {% if choice_speaker == speaker and loop.index0 == 0 %}
+                                                            selected{% endif %}>{{ image }}</option>
+                                                {% endfor %}
+                                            </optgroup>
+                                        {% endfor %}
+                                    </select>
+                                </p>
+                            {% endfor %}
+                            <button class="btn btn-primary btn-block"
+                                    type="submit">Create animated video
+                            </button>
+                        </form>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="tab-4">
+                        <button class="btn btn-primary btn-block" id="view" type="button">Load Video</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4" id="status">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive border rounded border-white shadow" id="sentences">
+            </div>
+            <div class="card border-light border rounded shadow">
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-warning btn-block" id="modify" type="button">Modify</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-block" id="synthesize" type="button">1. Synthesize
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-block" id="createAudio" type="button">2. Create base
+                                audio
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-block" id="createVideo" type="button">3. Create base
+                                video
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('deepstoryjs') }}"></script>
 </body>
+
 </html>

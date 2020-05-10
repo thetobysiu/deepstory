@@ -4,3 +4,4 @@ __pycache__/
 **/*.tar
 **/*.dat
 export/
+data/gpt2/
