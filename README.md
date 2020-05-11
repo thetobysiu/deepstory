@@ -6,7 +6,7 @@ It is a flask web app with a comfortable interface for creating your own story.
 ## Folder structure
 ```
 Deepstory
-|
+│
 ├── modules
 │   ├── dctts
 │   │   ├── hparams.py
