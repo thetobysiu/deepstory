@@ -31,7 +31,8 @@ $(document).ready(function () {
         img.insertAfter($(this));
     }).on('change', function(){
         $(this).parent().find("img").attr('src', "image/" + $(this).val());
-    }).submit(function (e) {
+    });
+    $("#animate").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "GET",

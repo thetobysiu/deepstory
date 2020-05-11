@@ -119,6 +119,11 @@ class Deepstory:
             self.sentence_dicts[i]['speaker'] = speaker
 
     def synthesize_wavs(self):
+        # clear model from vram to revent out of memory error
+        if self.current_gpt2:
+            del self.gpt2
+            self.gpt2 = None
+            torch.cuda.empty_cache()
         for speaker, sentence_ids in self.speaker_dict.items():
             with Voice(speaker) as voice:
                 for i in sentence_ids:
@@ -179,6 +184,7 @@ class Deepstory:
             return f.getvalue()
 
     def wav_to_vid(self):
+        torch.cuda.empty_cache()
         va = sda.VideoAnimator(gpu=0)  # Instantiate the animator
         for i, wavs_dict in enumerate(self.wavs_dicts):
             self.wavs_dicts[i]['base'] = va('data/sda/image.bmp', wavs_dict['wav'], fs=hp.sr)
