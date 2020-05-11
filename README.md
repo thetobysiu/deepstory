@@ -107,7 +107,8 @@ Deepstory
 Available at my blog: https://blog.thetobysiu.com/video/
 
 ## Models
-They are available at this google drive version of this project.
+They are available at the google drive version of this project.
+
 https://drive.google.com/drive/folders/1AxORLF-QFd2wSORzMOKlvCQSFhdZSODJ?usp=sharing
 
 ## Requirements
