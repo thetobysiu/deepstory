@@ -106,17 +106,21 @@ class Deepstory:
                 sentence_dict['text'] = sentence_dict['text'] + sentence_dict['punct']
                 sentence_dicts.append(sentence_dict)
 
+        self.sentence_dicts = sentence_dicts
+        self.update_speaker_dict()
+
+    def update_speaker_dict(self):
         speaker_dict = {}
-        for i, sentence_dict in enumerate(sentence_dicts):
+        for i, sentence_dict in enumerate(self.sentence_dicts):
             if sentence_dict['speaker'] not in speaker_dict:
                 speaker_dict[sentence_dict['speaker']] = []
             speaker_dict[sentence_dict['speaker']].append(i)
         self.speaker_dict = speaker_dict
-        self.sentence_dicts = sentence_dicts
 
     def modify_speaker(self, speaker_list):
         for i, speaker in enumerate(speaker_list):
             self.sentence_dicts[i]['speaker'] = speaker
+        self.update_speaker_dict()
 
     def synthesize_wavs(self):
         # clear model from vram to revent out of memory error
