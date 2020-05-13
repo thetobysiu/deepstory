@@ -9,6 +9,18 @@ You can convert image into a video like this:
 
 It provides a comfortable web interface and backend written with flask to create your own story.
 
+## Interface
+
+![1](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/1.png | width=400)
+
+![2](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/2.png)
+
+![3](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/3.png)
+
+![4](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/4.png)
+
+![5](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/5.png)
+
 ## Folder structure
 ```
 Deepstory
