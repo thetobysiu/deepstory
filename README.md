@@ -4,7 +4,9 @@ Deepstory is an artwork that incorporates Natural Language Generation(NLG) w/GPT
 To put it simply, it turns a text/generated text into a video where the character is animated to speak your story using his/her voice.
 
 You can convert image into a video like this:
+
 ![result](https://raw.githubusercontent.com/thetobysiu/deepstory/master/result.gif)
+
 It provides a comfortable web interface and backend written with flask to create your own story.
 
 ## Folder structure
