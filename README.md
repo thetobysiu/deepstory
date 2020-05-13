@@ -1,7 +1,9 @@
 # Deepstory
 Deepstory is an artwork that incorporates Natural Language Generation(NLG) w/GPT-2, Text-to-Speech(TTS) w/Deep Convolutional TTS, speech to animation w/Speech driven animation and image animation w/First Order Motion Model into a media application.
 
-It is a flask web app with a comfortable interface for creating your own story.
+To put it simply, it turns a text/generated text into a video where the character is animated to speak your story using his/her voice.
+
+It provides a comfortable web interface and backend written with flask to create your own story.
 
 ## Folder structure
 ```
@@ -107,7 +109,7 @@ Deepstory
 Available at my blog: https://blog.thetobysiu.com/video/
 
 ## Models
-They are available at the google drive version of this project.
+They are available at the google drive version of this project. The voice model are not publicly released yet, but you can check my other repo to recreate the same result.
 
 https://drive.google.com/drive/folders/1AxORLF-QFd2wSORzMOKlvCQSFhdZSODJ?usp=sharing
 
@@ -129,4 +131,4 @@ The whole project uses PyTorch, while tensorflow is listed in requirements.txt, 
 Only the files inside modules folder are slightly modified from the original. The remaining files are all written by me, except some parts that are referenced.
 
 ## Training models
-There are other repos for tools that I created to preprocess the files. They can be found in my profile.
+There are other repos of tools that I created to preprocess the files. They can be found in my profile.
