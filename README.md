@@ -11,15 +11,13 @@ It provides a comfortable web interface and backend written with flask to create
 
 ## Interface
 
-![1](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/1.png | width=400)
+<img src="https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/1.png" width="400">
 
-![2](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/2.png)
+<img src="https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/2.png" width="400">
 
-![3](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/3.png)
+<img src="https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/4.png" width="400">
 
-![4](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/4.png)
-
-![5](https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/5.png)
+<img src="https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/5.png" width="400">
 
 ## Folder structure
 ```
