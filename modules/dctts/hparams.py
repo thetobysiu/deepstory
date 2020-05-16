@@ -15,7 +15,7 @@ class HParams:
     reduction_rate = 4  # melspectrogram reduction rate, don't change because SSRN is using this rate
     n_fft = 2048 # fft points (samples)
     n_mels = 80  # Number of Mel banks to generate
-    power = 1.2  # Exponent for amplifying the predicted magnitude
+    power = 1.1  # Exponent for amplifying the predicted magnitude
     n_iter = 50  # Number of inversion iterations
     preemphasis = .97
     max_db = 140

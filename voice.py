@@ -69,6 +69,6 @@ class Voice:
         # normalize the audio with pydub
         audioseg = AudioSegment(wav.tobytes(), sample_width=2, frame_rate=hp.sr, channels=1)
         # normalized = effects.normalize(audioseg, self.norm_factor)
-        normalized = audioseg.apply_gain(-30 - audioseg.dBFS)
+        normalized = audioseg.apply_gain(-25 - audioseg.dBFS)
         wav = np.array(normalized.get_array_of_samples())
         return wav

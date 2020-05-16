@@ -52,7 +52,7 @@ class ImageAnimator:
         del self.kp_detector
         torch.cuda.empty_cache()
 
-    def animate_image(self, source_image, driving_video, relative=True, adapt_movement_scale=True):
+    def animate_image(self, source_image, driving_video, output_path, relative=True, adapt_movement_scale=True):
         with torch.no_grad():
             predictions = []
             # ====================================================================================
@@ -83,5 +83,8 @@ class ImageAnimator:
                                        kp_driving_initial=kp_driving_initial, use_relative_movement=relative,
                                        use_relative_jacobian=relative, adapt_movement_scale=adapt_movement_scale)
                 out = self.generator(source, kp_source=kp_source, kp_driving=kp_norm)
-                predictions.append(np.transpose(out['prediction'].data.cpu().numpy(), [0, 1, 2, 3])[0])
-        return np.array(predictions) * 255
+                out['prediction'] *= 255
+                out['prediction'] = out['prediction'].byte()
+                # predictions.append(out['prediction'][0].cpu().numpy())
+                predictions.append(out['prediction'].permute(0, 2, 3, 1)[0].cpu().numpy())
+        imageio.mimsave(output_path, predictions, fps=25)

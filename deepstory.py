@@ -6,10 +6,11 @@ import scipy
 import modules.sda as sda
 import glob
 import torch
+import ffmpeg
 
 from io import BytesIO
 from more_itertools import intersperse
-from util import normalize_text, separate, save_video
+from util import normalize_text, separate
 from voice import Voice
 from generate import Generator
 from animator import ImageAnimator
@@ -21,6 +22,14 @@ class Deepstory:
         # remove previously created video
         if self.is_animated:
             os.remove('export/animated.mp4')
+            for path in glob.glob('temp/animated/*'):
+                os.remove(path)
+        if self.is_combined:
+            os.remove('export/combined.wav')
+        if self.is_base:
+            for path in glob.glob('temp/base/*'):
+                os.remove(path)
+
         self.text = 'Geralt|I hate portals. A round of Gwent maybe?'
         self.generated_text = 'Geralt wants to'
         self.speaker_dict = {}
@@ -32,7 +41,6 @@ class Deepstory:
         self.sentence_dicts = []
         self.wavs_dicts = []
         self.gpt2 = False
-        self.wav = None
         self.gpt2_list = [os.path.split(os.path.split(path)[0])[-1] for path in glob.glob('data/gpt2/*/')]
         self.model_list = [os.path.split(os.path.split(path)[0])[-1] for path in glob.glob('data/dctts/*/')]
 
@@ -137,8 +145,9 @@ class Deepstory:
     def is_synthesized(self):
         return 'wav' in self.sentence_dicts[0] if self.sentence_dicts else False
 
-    def combine_wavs(self):
+    def combine_wavs(self, cut_size=800000):
         """Concat wavs of same speaker, so that video of speaker can be made easily"""
+        # adjust the cut_size if you have vram issue
         wavs_dicts = []
         wavs_dict = {}
         last_speaker = ''
@@ -148,7 +157,7 @@ class Deepstory:
             if sentence_dict['begin']:
                 wav = np.pad(wav, (get_silence(0.5), 0), 'constant')  # Every line has 0.5s silence
 
-            if i != 0 and last_speaker != sentence_dict['speaker']:
+            if i != 0 and (last_speaker != sentence_dict['speaker'] or sum(len(wav) for wav in wavs_dict['wav']) > cut_size):
                 wavs_dict['speaker'] = last_speaker
                 # Add silence between each sentence within a line, default 0.15s
                 wavs_dict['wav'] = np.concatenate(
@@ -173,43 +182,67 @@ class Deepstory:
             wavs_dict['wav'] = np.pad(wavs_dict['wav'], (0, get_silence(0.5)), 'constant')
             wavs_dicts.append(wavs_dict)
         # TODO: add silence according to punctuation
-        self.wav = np.concatenate([wavs_dict['wav'] for wavs_dict in wavs_dicts], axis=None)
+        scipy.io.wavfile.write('export/combined.wav', hp.sr,
+                               np.concatenate([wavs_dict['wav'] for wavs_dict in wavs_dicts], axis=None))
         self.wavs_dicts = wavs_dicts
-        # scipy.io.wavfile.write('export/combined.wav', hp.sr, self.wav)
 
     @property
     def is_combined(self):
-        return False if self.wav is None else True
+        return os.path.isfile('export/combined.wav')
 
-    def stream(self, sentence_id=0, combined=False):
-        wav = self.wav if combined else self.sentence_dicts[sentence_id]['wav']
+    def stream(self, sentence_id=0):
         with BytesIO() as f:
-            scipy.io.wavfile.write(f, hp.sr, wav)
+            scipy.io.wavfile.write(f, hp.sr, self.sentence_dicts[sentence_id]['wav'])
             return f.getvalue()
 
     def wav_to_vid(self):
-        torch.cuda.empty_cache()
+        """Create Base video for First Order Motion Model"""
+        if not os.path.isdir(f'temp'):
+            os.mkdir(f'temp')
+        if os.path.isdir(f'temp/base'):
+            for path in glob.glob('temp/base/*'):
+                os.remove(path)
+        else:
+            os.mkdir(f'temp/base')
+
         va = sda.VideoAnimator(gpu=0)  # Instantiate the animator
         for i, wavs_dict in enumerate(self.wavs_dicts):
-            self.wavs_dicts[i]['base'] = va('data/sda/image.bmp', wavs_dict['wav'], fs=hp.sr)
+            np.save(f'temp/base/{i}|{wavs_dict["speaker"]}.npy', va('data/sda/image.bmp', wavs_dict['wav'], fs=hp.sr))
         del va
+        del self.wavs_dicts
+        self.wavs_dicts = []
         torch.cuda.empty_cache()
 
     @property
     def is_base(self):
-        return 'base' in self.wavs_dicts[0] if self.wavs_dicts else False
+        try:
+            return bool(os.listdir('temp/base'))
+        except FileNotFoundError:
+            return False
 
     def animate_image(self, image_dict):
+        if os.path.isdir(f'temp/animated'):
+            for path in glob.glob('temp/animated/*'):
+                os.remove(path)
+        else:
+            os.mkdir(f'temp/animated')
+
         with ImageAnimator() as animator:
-            for i, wavs_dict in enumerate(self.wavs_dicts):
-                self.wavs_dicts[i]['animated'] = animator.animate_image(
-                    f'data/images/{image_dict[wavs_dict["speaker"]]}', wavs_dict['base'])
-        save_video(
-            np.concatenate([wavs_dict['base'] for wavs_dict in self.wavs_dicts]),
-            self.wav, 'export/base.mp4', hp.sr)
-        save_video(
-            np.concatenate([wavs_dict['animated'] for wavs_dict in self.wavs_dicts]),
-            self.wav, 'export/animated.mp4', hp.sr)
+            for i, base_path in enumerate(sorted(glob.glob('temp/base/*'))):
+                speaker = os.path.splitext(os.path.basename(base_path))[0].split("|")[1]
+                animator.animate_image(
+                    f'data/images/{image_dict[speaker]}',
+                    np.load(base_path),
+                    f'temp/animated/{i}.mp4'
+                )
+
+        audio = ffmpeg.input('export/combined.wav').audio
+        videos = [ffmpeg.input(clip).video for clip in sorted(glob.glob('temp/animated/*'))]
+        ffmpeg.concat(*videos).output('export/combined.mp4', loglevel="panic").overwrite_output().run()
+        video = ffmpeg.input('export/combined.mp4').video
+        ffmpeg.output(
+            video, audio, 'export/animated.mp4', loglevel="panic", vcodec="copy", ar=hp.sr, **{'b:a': '128k'}
+        ).overwrite_output().run()
 
     @property
     def is_animated(self):

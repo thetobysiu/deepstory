@@ -5,3 +5,4 @@ __pycache__/
 **/*.dat
 export/
 data/gpt2/
+temp/

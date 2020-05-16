@@ -87,11 +87,8 @@ def load_sentence():
 
 @app.route('/animate', methods=['GET'])
 def animate():
-    if deepstory.is_base:
-        deepstory.animate_image(request.args)
-        return send_message(f'Images animated.')
-    else:
-        return send_message('Please create base video first.', 403)
+    deepstory.animate_image(request.args)
+    return send_message(f'Images animated.')
 
 
 @app.route('/modify', methods=['POST'])
