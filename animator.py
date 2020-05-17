@@ -63,7 +63,7 @@ class ImageAnimator:
             del source_image
             source = source.permute(0, 3, 1, 2)
             # resize
-            source = F.interpolate(source, size=(256, 256), mode='bilinear', align_corners=False)
+            source = F.interpolate(source, size=(256, 256), mode='area')
 
             # modified to fit speech driven animation
             driving = torch.from_numpy(driving_video).to('cuda') / 255

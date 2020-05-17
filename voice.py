@@ -1,6 +1,7 @@
 # SIU KING WAI SM4701 Deepstory
 import numpy as np
 import torch
+import glob
 import re
 
 from pydub import AudioSegment, effects
@@ -21,8 +22,6 @@ def text_normalize(text):
 
 
 class Voice:
-    norm_factor = 3.0
-
     def __init__(self, speaker):
         self.speaker = speaker
         self.text2mel = None
@@ -37,7 +36,7 @@ class Voice:
 
     def load(self):
         self.text2mel = Text2Mel(vocab).to(device).eval()
-        self.text2mel.load_state_dict(torch.load(f'data/dctts/{self.speaker}/t2m.pth')['state_dict'])
+        self.text2mel.load_state_dict(torch.load(glob.glob(f'data/dctts/{self.speaker}/t2m*.pth')[0])['state_dict'])
         self.ssrn = SSRN().to(device).eval()
         self.ssrn.load_state_dict(torch.load(f'data/dctts/{self.speaker}/ssrn.pth')['state_dict'])
 
@@ -69,6 +68,6 @@ class Voice:
         # normalize the audio with pydub
         audioseg = AudioSegment(wav.tobytes(), sample_width=2, frame_rate=hp.sr, channels=1)
         # normalized = effects.normalize(audioseg, self.norm_factor)
-        normalized = audioseg.apply_gain(-25 - audioseg.dBFS)
+        normalized = audioseg.apply_gain(-30 - audioseg.dBFS)
         wav = np.array(normalized.get_array_of_samples())
         return wav

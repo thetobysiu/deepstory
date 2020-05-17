@@ -19,16 +19,16 @@ from modules.dctts import get_silence, hp
 
 class Deepstory:
     def __init__(self):
-        # remove previously created video
-        if self.is_animated:
-            os.remove('export/animated.mp4')
-            for path in glob.glob('temp/animated/*'):
-                os.remove(path)
-        if self.is_combined:
-            os.remove('export/combined.wav')
-        if self.is_base:
-            for path in glob.glob('temp/base/*'):
-                os.remove(path)
+        # # remove previously created video
+        # if self.is_animated:
+        #     os.remove('export/animated.mp4')
+        #     for path in glob.glob('temp/animated/*'):
+        #         os.remove(path)
+        # if self.is_combined:
+        #     os.remove('export/combined.wav')
+        # if self.is_base:
+        #     for path in glob.glob('temp/base/*'):
+        #         os.remove(path)
 
         self.text = 'Geralt|I hate portals. A round of Gwent maybe?'
         self.generated_text = 'Geralt wants to'
@@ -228,7 +228,9 @@ class Deepstory:
             os.mkdir(f'temp/animated')
 
         with ImageAnimator() as animator:
-            for i, base_path in enumerate(sorted(glob.glob('temp/base/*'))):
+            for i, base_path in enumerate(sorted(
+                    glob.glob('temp/base/*'),
+                    key=lambda x: int(os.path.splitext(os.path.basename(x))[0].split("|")[0]))):
                 speaker = os.path.splitext(os.path.basename(base_path))[0].split("|")[1]
                 animator.animate_image(
                     f'data/images/{image_dict[speaker]}',
@@ -237,7 +239,8 @@ class Deepstory:
                 )
 
         audio = ffmpeg.input('export/combined.wav').audio
-        videos = [ffmpeg.input(clip).video for clip in sorted(glob.glob('temp/animated/*'))]
+        videos = [ffmpeg.input(clip).video for clip in sorted(
+            glob.glob('temp/animated/*'), key=lambda x: int(os.path.basename(x)[:-4]))]
         ffmpeg.concat(*videos).output('export/combined.mp4', loglevel="panic").overwrite_output().run()
         video = ffmpeg.input('export/combined.mp4').video
         ffmpeg.output(

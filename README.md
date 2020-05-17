@@ -127,6 +127,22 @@ They are available at the google drive version of this project. The voice model 
 
 https://drive.google.com/drive/folders/1AxORLF-QFd2wSORzMOKlvCQSFhdZSODJ?usp=sharing
 
+You can try it with the pre-trained LJ Speech model from the original pytorch dc-tts repo.
+
+Link from tugstugi's colab demo:
+```
+text2mel:(rename to t2m.pth)
+https://www.dropbox.com/s/4t13ugxzzgnocbj/step-300K.pth
+
+ssrn:(rename to ssrn.pth)
+https://www.dropbox.com/s/gw4aqrgcvccmg0g/step-100K.pth
+```
+But you need to change the 
+
+d = 512  # Text2Mel hidden unit dimension
+
+in hparams.py under modules/dctts to d = 256, and then place the folder LJ containing the t2m.pth and ssrn.pth under data/dctts
+
 ## Requirements
 It is required to have an nvidia GPU with at least 4GB of VRAM to run this project
 
@@ -143,6 +159,9 @@ https://github.com/huggingface/transformers
 The whole project uses PyTorch, while tensorflow is listed in requirements.txt, it was used for transformers to convert a model trained from gpt-2-simple to a Pytorch model. 
  
 Only the files inside modules folder are slightly modified from the original. The remaining files are all written by me, except some parts that are referenced.
+
+## Bugs
+There's still some memory issues if you synthesize sentences within a session over and over, but it takes at least 10 times to cause memory overflow.
 
 ## Training models
 There are other repos of tools that I created to preprocess the files. They can be found in my profile.
