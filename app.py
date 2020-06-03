@@ -25,7 +25,9 @@ def map_page():
 
 @app.route('/deepstory.js')
 def deepstoryjs():
-    return render_template('deepstory.js')
+    response = make_response(render_template('deepstory.js'))
+    response.mimetype = "text/javascript"
+    return response
 
 
 @app.route('/status')
