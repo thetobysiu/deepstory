@@ -1,0 +1,24 @@
+{% if loaded_speakers %}
+    <form action="{{ url_for('animate') }}" id="animate" method="post">
+        {% for speaker in loaded_speakers %}
+            <p>{{ speaker }}:
+                <select class="border rounded border-light shadow-sm custom-select custom-select-sm"
+                        name="{{ speaker }}">
+                    {% for choice_speaker, images in image_dict.items() %}
+                        <optgroup label="{{ choice_speaker }}">
+                            {% for image in images %}
+                                <option value="{{ choice_speaker }}/{{ image }}"
+                                        {% if choice_speaker == speaker and loop.index0 == 0 %} selected{% endif %}>
+                                    {{ image }}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </p>
+        {% endfor %}
+    <button class="btn btn-success btn-block" type="submit">Create animated video</button>
+    </form>
+{% else %}
+    <p>No speakers loaded.</p>
+{% endif %}

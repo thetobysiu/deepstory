@@ -65,7 +65,3 @@ def save_to_wav(mag, filename):
     """Generate and save an audio file from the given linear spectrogram using Griffin-Lim."""
     wav = spectrogram2wav(mag)
     scipy.io.wavfile.write(filename, hp.sr, wav)
-
-
-def get_silence(second):
-    return int(hp.sr * second)

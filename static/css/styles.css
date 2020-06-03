@@ -24,3 +24,7 @@ textarea.form-control {
   overflow-y:hidden;
 }
 
+img {
+  width: 256px;
+  height: auto;
+}

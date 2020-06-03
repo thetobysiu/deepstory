@@ -1,10 +1,12 @@
-<div class="card border-white border rounded shadow">
-    <div class="card-body">
-        <h4 class="card-title">Status:</h4>
-        <p class="card-text">GPT2: {% if gpt2 %}{{ gpt2 }}{% else %}False{% endif %}</p>
-        <p class="card-text">Synthesized: {% if synthsized %}True{% else %}False{% endif %}</p>
-        <p class="card-text">Base audio: {% if combined %}True{% else %}False{% endif %}</p>
-        <p class="card-text">Base video: {% if base %}True{% else %}False{% endif %}</p>
-        <p class="card-text">Animated video: {% if animated %}True{% else %}False{% endif %}</p>
+<div class="col">
+    <div class="card border-white border rounded shadow">
+        <div class="card-body">
+            <h4 class="card-title">Status:</h4>
+            <p class="card-text">Synthesized: {% if synthsized %}True{% else %}False{% endif %}</p>
+            <p class="card-text">Base audio: {% if combined %}True{% else %}False{% endif %}</p>
+            <p class="card-text">Base video: {% if base %}True{% else %}False{% endif %}</p>
+            <p class="card-text">Animated video: {% if animated %}True{% else %}False{% endif %}</p>
+            <button class="btn btn-danger btn-block d-block" type="button" id="clearCache">Clear cache</button>
+        </div>
     </div>
 </div>

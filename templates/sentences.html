@@ -4,7 +4,8 @@
             <th>Speaker</th>
             <th>Sentence</th>
             <th>Modify</th>
-            <th>Audio</th>
+            {% if speaker_map %}<th>Mapped</th>{% endif %}
+            {% if 'wav' in sentences[0] %}<th>Audio</th>{% endif %}
         </tr>
     </thead>
     <tbody>
@@ -14,21 +15,33 @@
             <td>{{ sentence['text'] }}</td>
             <td>
                 <select name="{{ loop.index0 }}" class="border rounded border-light shadow-sm custom-select custom-select-sm">
+                <optgroup label="Model speakers">
                     {% for model in model_list %}
                         <option value="{{ model }}"{% if model == sentence['speaker'] %} selected{% endif %}>{{ model }}</option>
                     {% endfor %}
+                </optgroup>
+                {% if speaker_map %}
+                    <optgroup label="Loaded speakers">
+                        {% for speaker in speaker_map.keys() %}
+                            <option value="{{ speaker }}"{% if speaker == sentence['speaker'] %} selected{% endif %}>{{ speaker }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endif %}
                 </select>
             </td>
-            <td>
-                {% if 'wav' in sentence %}
+            {% if speaker_map %}
+                <td>
+                    {% if sentence['speaker'] in speaker_map %}{{ speaker_map[sentence['speaker']] }}{% else %}---{% endif %}
+                </td>
+            {% endif %}
+            {% if 'wav' in sentence %}
+                <td>
                     <audio controls>
                         <source src="wav/{{ loop.index0 }}" type="audio/wav">
                         Your browser does not support the audio tag.
                     </audio>
-                {% else %}
-                    False
-                {% endif %}
-            </td>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

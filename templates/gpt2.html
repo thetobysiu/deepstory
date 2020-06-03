@@ -1,1 +1,2 @@
-<textarea class="border-light shadow-sm form-control" style="margin-top: 15px;" name="text">{{ generated_text }}</textarea>
+<h5 class="card-text">Current model: {% if gpt2 %}{{ gpt2 }}{% else %}False{% endif %}</h5>
+<textarea class="border-light shadow-sm form-control" style="margin-top: 15px;" name="text" id="gpt2Text">{{ generated_text }}</textarea>

@@ -1,0 +1,19 @@
+{% if sentences %}
+    <div class="col">
+        <div class="card border-white border rounded shadow">
+            <div class="card-body">
+                <h4 class="card-title">Generated sentences:</h4>
+                {% for sentence in sentences %}
+                    <div class="row">
+                        <div class="col">
+                            <p>{{ sentence | replace('\n', '<br>') | safe }}</p>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-primary btn-block d-block add" type="submit" name="id" value="{{ loop.index0 }}">+</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

@@ -32,14 +32,13 @@ joblib==0.14.1
 Keras-Preprocessing==1.1.0
 kiwisolver==1.2.0
 librosa==0.7.2
-llvmlite==0.32.0
 Markdown==3.2.2
 MarkupSafe==1.1.1
 matplotlib==3.2.1
 more-itertools==8.2.0
 murmurhash==1.0.2
 networkx==2.4
-numba==0.49.0
+numba==0.48.0
 numpy==1.18.3
 oauthlib==3.1.0
 opencv-python==4.2.0.34

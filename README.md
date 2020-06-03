@@ -9,6 +9,22 @@ You can convert image into a video like this:
 
 It provides a comfortable web interface and backend written with flask to create your own story.
 
+It supports transformers model, and pytorch-dctts models
+
+## Updates
+
+1. Redesign interface, especially the whole GPT2 interface
+2. GPT2 now support text loading from original data, so that it can continue to generate a story based on the book
+3. Figure out the token limits in GPT2 and only infer to the nearest 1024 - predict length tokens
+4. GPT2 support interactive mode that generates several batches of sentences and provides an interface to add those sentence
+5. Sentence speaker mapping system, not replacing all speaker by default anymore
+6. text normalization is now in the synthesizing stage so that punctuations are preserved and can be referenced to have a variable duration in synthesized audio
+7. Audio synthesizing are now all in temp folder, synthesized audios are trimmed so that it's animated video is more accurate(sda mode trained data are short also)
+8. Combined audio now have variable silences according to punctuation
+9. Basically, rewrite the web interface and lots of codes...
+
+Colab version will be available soon!
+
 ## Interface
 
 <img src="https://raw.githubusercontent.com/thetobysiu/deepstory/master/interface/1.png" width="400">
@@ -22,101 +38,114 @@ It provides a comfortable web interface and backend written with flask to create
 ## Folder structure
 ```
 Deepstory
-│
-├── modules
-│   ├── dctts
-│   │   ├── hparams.py
-│   │   ├── audio.py
-│   │   ├── layers.py
-│   │   ├── ssrn.py
-│   │   ├── text2mel.py
-│   │   └── __init__.py
-│   ├── fom
-│   │   ├── dense_motion.py
-│   │   ├── generator.py
-│   │   ├── keypoint_detector.py
-│   │   ├── util.py
-│   │   ├── animate.py
-│   │   ├── __init__.py
-│   │   └── sync_batchnorm
-│   │       ├── batchnorm.py
-│   │       ├── comm.py
-│   │       ├── __init__.py
-│   │       └── replicate.py
-│   └── sda
-│       ├── encoder_audio.py
-│       ├── encoder_image.py
-│       ├── img_generator.py
-│       ├── rnn_audio.py
-│       ├── utils.py
-│       ├── sda.py
-│       └── __init__.py
+├── animator.py
+├── app.py
 ├── data
 │   ├── dctts
 │   │   ├── Geralt
 │   │   │   ├── ssrn.pth
-│   │   │   ├── t2bm.pth
+│   │   │   └── t2m.pth
+│   │   ├── LJ
+│   │   │   ├── ssrn.pth
 │   │   │   └── t2m.pth
 │   │   └── Yennefer
 │   │       ├── ssrn.pth
 │   │       └── t2m.pth
-│   ├── sda
-│   │   ├── grid.dat
-│   │   └── image.bmp
 │   ├── fom
 │   │   ├── vox-256.yaml
 │   │   ├── vox-adv-256.yaml
 │   │   ├── vox-adv-cpk.pth.tar
 │   │   └── vox-cpk.pth.tar
+│   ├── gpt2
+│   │   ├── Waiting for Godot
+│   │   │   ├── config.json
+│   │   │   ├── default.txt
+│   │   │   ├── merges.txt
+│   │   │   ├── pytorch_model.bin
+│   │   │   ├── special_tokens_map.json
+│   │   │   ├── text.txt
+│   │   │   ├── tokenizer_config.json
+│   │   │   └── vocab.json
+│   │   └── Witcher Books
+│   │       ├── config.json
+│   │       ├── default.txt
+│   │       ├── merges.txt
+│   │       ├── pytorch_model.bin
+│   │       ├── special_tokens_map.json
+│   │       ├── text.txt
+│   │       ├── tokenizer_config.json
+│   │       └── vocab.json
 │   ├── images
 │   │   ├── Geralt
 │   │   │   ├── 0.jpg
-│   │   │   ├── 1.jpg
-│   │   │   └── 2.jpg
+│   │   │   └── fx.jpg
 │   │   └── Yennefer
 │   │       ├── 0.jpg
 │   │       ├── 1.jpg
-│   │       └── 2.jpg
-│   └── gpt2
-│       ├── w3book
-│       │   ├── config.json
-│       │   ├── merges.txt
-│       │   ├── pytorch_model.bin
-│       │   └── vocab.json
-│       └── dialog53000
-│           ├── config.json
-│           ├── merges.txt
-│           ├── pytorch_model.bin
-│           └── vocab.json
+│   │       ├── 2.jpg
+│   │       ├── 3.jpg
+│   │       ├── 4.jpg
+│   │       └── 5.jpg
+│   └── sda
+│       ├── grid.dat
+│       └── image.bmp
+├── deepstory.py
+├── generate.py
+├── modules
+│   ├── dctts
+│   │   ├── audio.py
+│   │   ├── hparams.py
+│   │   ├── __init__.py
+│   │   ├── layers.py
+│   │   ├── ssrn.py
+│   │   └── text2mel.py
+│   ├── fom
+│   │   ├── animate.py
+│   │   ├── dense_motion.py
+│   │   ├── generator.py
+│   │   ├── __init__.py
+│   │   ├── keypoint_detector.py
+│   │   ├── sync_batchnorm
+│   │   │   ├── batchnorm.py
+│   │   │   ├── comm.py
+│   │   │   ├── __init__.py
+│   │   │   └── replicate.py
+│   │   └── util.py
+│   └── sda
+│       ├── encoder_audio.py
+│       ├── encoder_image.py
+│       ├── img_generator.py
+│       ├── __init__.py
+│       ├── rnn_audio.py
+│       ├── sda.py
+│       └── utils.py
+├── README.md
+├── requirements.txt
 ├── static
 │   ├── bootstrap
 │   │   ├── css
 │   │   │   └── bootstrap.min.css
 │   │   └── js
 │   │       └── bootstrap.min.js
-│   ├── js
-│   │   └── jquery.min.js
-│   └── css
-│       └── styles.css
-├── animator.py
-├── generate.py
-├── util.py
-├── voice.py
-├── app.py
-├── requirements.txt
-├── README.md
-├── output
+│   ├── css
+│   │   └── styles.css
+│   └── js
+│       └── jquery.min.js
 ├── templates
-│   ├── models.html
+│   ├── animate.html
+│   ├── deepstory.js
+│   ├── gen_sentences.html
 │   ├── gpt2.html
-│   ├── status.html
 │   ├── index.html
+│   ├── map.html
+│   ├── models.html
 │   ├── sentences.html
-│   └── deepstory.js
-├── deepstory.py
-└── export
-    ├── base.mp4
-    └── animated.mp4
+│   ├── status.html
+│   └── video.html
+├── test.py
+├── text.txt
+├── util.py
+└── voice.py
 ```
 
 ## Demo
