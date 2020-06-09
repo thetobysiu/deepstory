@@ -66,7 +66,7 @@ def trim_text(generated_text, max_sentences=0, script=False):
     generated_text = generated_text.replace(b'\xef\xbf\xbd'.decode('utf-8'), '')
     if script:
         generated_text = generated_text.replace('\n', '')
-    text_list = re.findall(r'.*?[.!\?][’”]*', generated_text, re.DOTALL)
+    text_list = re.findall(r'.*?[.!\?…—][’”]*', generated_text, re.DOTALL)
     if script:
         text_list = ['\n' + text if text[0].isupper() else text for text in text_list]
 
@@ -76,7 +76,6 @@ def trim_text(generated_text, max_sentences=0, script=False):
         return ''.join(text_list[:max_sentences])
     else:
         return ''.join(text_list)
-
 
 
     # backup...

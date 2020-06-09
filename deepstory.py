@@ -209,6 +209,9 @@ class Deepstory:
             '“': 0.05
         }
 
+        if not os.path.isdir(f'export'):
+            os.mkdir(f'export')
+
         if not os.path.isdir(f'temp'):
             os.mkdir(f'temp')
 

@@ -151,26 +151,16 @@ Deepstory
 ## Demo
 Available at my blog: https://blog.thetobysiu.com/video/
 
-## Models
-They are available at the google drive version of this project. The voice model are not publicly released yet, but you can check my other repo to recreate the same result.
+## Complete project download
+They are available at the google drive version of this project. All the models(including Geralt, Yennefer) are included.
+
+You have to download the spacy english model first.
+
+make sure you have ffmpeg installed in your computer, and ffmpeg-python installed.
 
 https://drive.google.com/drive/folders/1AxORLF-QFd2wSORzMOKlvCQSFhdZSODJ?usp=sharing
 
-You can try it with the pre-trained LJ Speech model from the original pytorch dc-tts repo.
-
-Link from tugstugi's colab demo:
-```
-text2mel:(rename to t2m.pth)
-https://www.dropbox.com/s/4t13ugxzzgnocbj/step-300K.pth
-
-ssrn:(rename to ssrn.pth)
-https://www.dropbox.com/s/gw4aqrgcvccmg0g/step-100K.pth
-```
-But you need to change the 
-
-d = 512  # Text2Mel hidden unit dimension
-
-in hparams.py under modules/dctts to d = 256, and then place the folder LJ containing the t2m.pth and ssrn.pth under data/dctts
+To simplify things, a google colab version will be released soon...
 
 ## Requirements
 It is required to have an nvidia GPU with at least 4GB of VRAM to run this project

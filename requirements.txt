@@ -11,7 +11,6 @@ click==7.1.1
 cycler==0.10.0
 cymem==2.0.3
 decorator==4.4.2
-en-core-web-sm==2.2.5
 face-alignment==1.0.0
 ffmpeg-python==0.2.0
 filelock==3.0.12
