@@ -11,6 +11,11 @@ It provides a comfortable web interface and backend written with flask to create
 
 It supports transformers model, and pytorch-dctts models
 
+## Live Demo
+Colab (flask-ngrok): https://colab.research.google.com/drive/1HYCPUmFw5rN8kvZdwzFpfBlaUMWPNHas?usp=sharing
+
+Video (In case you need instructions): https://blog.thetobysiu.com/video/
+
 ## Updates
 
 1. Redesign interface, especially the whole GPT2 interface
@@ -147,9 +152,6 @@ Deepstory
 ├── util.py
 └── voice.py
 ```
-
-## Demo
-Available at my blog: https://blog.thetobysiu.com/video/
 
 ## Complete project download
 They are available at the google drive version of this project. All the models(including Geralt, Yennefer) are included.
